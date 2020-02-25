@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  description: 'This is a api document for Go2Share project.'
+  description: 'This is rest api document for Go2Share project.'
   version: 1.1.0
-  title: Go2Share api document
+  title: Go2Share api docs
   termsOfService: 'http://swagger.io/terms/'
   contact:
     email: nishant.shah@wwindia.com
@@ -41,6 +41,87 @@ paths:
       responses:
         default:
           description: successful operation
+      security:
+       - jwt: []
+
+  '/user/{id}':
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByID
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+       - jwt: []
+    put:
+      tags:
+        - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be updated
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated user object
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+      security:
+       - jwt: []
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: User not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      security:
+       - jwt: []
 
   /user/login:
     get:
@@ -91,124 +172,183 @@ paths:
       responses:
         default:
           description: successful operation
-  '/user/{id}':
-    get:
-      tags:
-        - user
-      summary: Get user by user name
-      description: ''
-      operationId: getUserByName
-      produces:
-        - application/json
-      parameters:
-        - name: username
-          in: path
-          description: 'The name that needs to be fetched. Use user1 for testing. '
-          required: true
-          type: string
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            $ref: '#/definitions/User'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-    put:
-      tags:
-        - user
-      summary: Updated user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      produces:
-        - application/json
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be updated
-          required: true
-          type: string
-        - in: body
-          name: body
-          description: Updated user object
-          required: true
-          schema:
-            $ref: '#/definitions/User'
-      responses:
-        '400':
-          description: Invalid user supplied
-        '404':
-          description: User not found
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          type: string
-      responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
+      security:
+       - jwt: []
 securityDefinitions:
-  api_key:
+  jwt:
     type: apiKey
-    name: api_key
+    name: jwt_token
     in: header
+
+
 definitions:
+  TU:
+    type: object
+    required:
+      - name
+      - chassis_number
+      - make
+
+    properties:
+      name:
+        type: string
+      category:
+        $ref: "#/definitions/TU_Category"
+      make:
+        type: string
+      model:
+        type: string
+      pictures:
+        type: "array"
+        items:
+          type: string
+          format: url
+      chassis_number:
+        type: string
+      registraion_date:
+        type: string
+        format: date
+      color:
+        type: string
+      wheels:
+        type: integer
+      doors:
+        type: integer
+      seats:
+        type: integer
+      fuel_type:
+        type: string
+        enum:
+          - "petrol"
+          - "disel"
+          - "cng"
+          - "lpg"
+          - "ev"
+      is_insured:
+        type: boolean
+      insurance_number:
+        type: string
+      insurance_company:
+        type: string
+      insurance_expiry:
+        type: string
+        format: date
+      registration_type:
+        type: string
+        enum:
+          - "private"
+          - "public"
+          - "business"
+      comment:
+        type: string
+  TU_Category:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "car,bike,yacht"
+      icon:
+        type: "string"
+        format: url
+      license_type:
+        type: "array"
+        items:
+           type: string
+  License:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      gender:
+        type: "string"
+      dob:
+        type: "string"
+      license_no:
+        type: "string"
+      pictures:
+        type: "array"
+        items:
+          type: string
+          format: url
+      issue_date:
+        type: string
+        format: date
+      expiry_date:
+        type: string
+        format: date
+      license_type:
+        type: "array"
+        items:
+           type: string
+      country:
+        type: string
+      class:
+        type: string
+      restriction:
+        type: string
+      is_valid:
+        type: boolean
+      comment:
+        type: string
   User:
     type: object
+    required:
+      - phone
+      - email
     properties:
       id:
         type: integer
         format: int64
-      username:
+      avatar:
         type: string
-      firstName:
+        format: url
+      first_name:
         type: string
-      lastName:
+      last_name:
         type: string
       email:
         type: string
-      password:
-        type: string
+      gender:
+        type: boolean
       phone:
         type: string
-      userStatus:
-        type: integer
-        format: int32
-        description: User Status
-  Tag:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      name:
+      dob:
         type: string
-    xml:
-      name: Tag
-
-  ApiResponse:
-    type: object
-    properties:
-      code:
+        format: date
+      country:
+        type: string
+      country_code:
         type: integer
-        format: int32
-      type:
+      user_type:
         type: string
-      message:
+        enum:
+          - "individual"
+          - "business"
+      status:
         type: string
+        enum:
+          - "deleted"
+          - "approved"
+          - "rejected"
+          - "incomplete"
+          - "processing"
+      license:
+         $ref: "#/definitions/License"
+      created_at:
+        type: string
+        format: date_time
+      updated_at:
+        type: string
+        format: date_time
+      deleted_at:
+        type: string
+        format: date_time
   ErrorResponse:
     type: object
     properties:
@@ -219,6 +359,10 @@ definitions:
         type: string
       message:
         type: string
+      host:
+        type: string
+      endpoint:
+        type: string
 externalDocs:
-  description: Find out more about Swagger
-  url: 'http://swagger.io'
+  description: Find out more about Neosoft
+  url: 'http://neosofttech.com'
