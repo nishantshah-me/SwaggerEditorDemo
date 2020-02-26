@@ -39,11 +39,51 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses:
-        default:
+        '201':
           description: successful operation
+        '401':
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       security:
        - jwt: []
-
+    '/user':
+    get:
+      tags:
+        - user
+      summary: Get all user
+      description: ''
+      operationId: getUserByID
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          in: query
+          description: 'page number'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: 'no. of items per page '
+          required: false
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: Invalid username supplied
+        '401':
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: User not found
+      security:
+       - jwt: []
   '/user/{id}':
     get:
       tags:
@@ -66,6 +106,10 @@ paths:
             $ref: '#/definitions/User'
         '400':
           description: Invalid username supplied
+        '401':
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: User not found
       security:
@@ -91,10 +135,21 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
         '400':
           description: Invalid user supplied
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '401':
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: User not found
+
       security:
        - jwt: []
     delete:
@@ -112,14 +167,18 @@ paths:
           required: true
           type: string
       responses:
+        '204':
+          description: successful operation
         '400':
           description: Invalid username supplied
           schema:
             $ref: '#/definitions/ErrorResponse'
-        '404':
-          description: User not found
+        '401':
+          description: unauthorized
           schema:
             $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: User not found
       security:
        - jwt: []
 
@@ -170,7 +229,7 @@ paths:
         - application/json
       parameters: []
       responses:
-        default:
+        '204':
           description: successful operation
       security:
        - jwt: []
@@ -440,13 +499,30 @@ definitions:
       deleted_at:
         type: string
         format: date_time
+  Roles:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+
+  Insurance:
+    type: object
+    properties:
+      name:
+        type: string
+      dob:
+        type: string
+        format: date
+
   ErrorResponse:
     type: object
     properties:
       code:
         type: integer
         format: int32
-      type:
+      exception:
         type: string
       message:
         type: string
