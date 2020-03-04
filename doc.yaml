@@ -21,7 +21,6 @@ schemes:
   - https
   - http
 paths:
-
   /user:
     post:
       tags:
@@ -47,13 +46,13 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       security:
        - jwt: []
-    '/user':
+
     get:
       tags:
         - user
       summary: Get all user
       description: ''
-      operationId: getUserByID
+      operationId: getAllUserBy
       produces:
         - application/json
       parameters:
